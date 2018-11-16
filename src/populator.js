@@ -27,8 +27,14 @@ let people = users.filter(function (item) {
 console.log("CEIT 93 Community Identified!")
 console.log("Starting to populate the fields...")
 
+
+let start = parseInt(process.argv[2])
+let end = parseInt(process.argv[3])
+console.log("from " + start + ' to ' + end)
+
 // Populate related data fields
-for (let index in people){
+for (let index = start; index < end && index < people.length; index++){
+    console.log("index: " + index + "/" + people.length)
     let user = people[index]
     console.log(user.name)
     // Populate interviews
@@ -47,34 +53,44 @@ for (let index in people){
             user.posts[i] = post
         } catch (e) {}
     }
+    console.log('writing down ' + user.username)
+    let string = stringify(user)
+    fs.writeFile('../out/'+user.username+'.json', string, 'utf8', function(err) {
+        if (err) throw err;
+        console.log('complete!' );
+    });
 }
-console.log(people)
 console.log("People are populated!")
-console.log("Writing data to file...")
+// console.log("Writing data to file...")
 
-// Start to write data to file
-// let json = JSON.stringify(people);
-let cache = [];
-let json = JSON.stringify(people, function(key, value) {
-    if (typeof value === 'object' && value !== null) {
-        if (cache.indexOf(value) !== -1) {
-            // Duplicate reference found
-            try {
-                // If this value does not reference a parent it can be deduped
-                return JSON.parse(JSON.stringify(value));
-            } catch (error) {
-                // discard key if value cannot be deduped
-                return;
+// Start to write the whole data to file
+// let json = stringify(people)
+// fs.writeFile('out/people.json', json, 'utf8', function(err) {
+//     if (err) throw err;
+//     console.log('complete');
+// });
+// console.log("Done!")
+
+
+function stringify(data) {
+    let cache = [];
+    let json = JSON.stringify(data, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+                // Duplicate reference found
+                try {
+                    // If this value does not reference a parent it can be deduped
+                    return JSON.parse(JSON.stringify(value));
+                } catch (error) {
+                    // discard key if value cannot be deduped
+                    return;
+                }
             }
+            // Store value in our collection
+            cache.push(value);
         }
-        // Store value in our collection
-        cache.push(value);
-    }
-    return value;
-});
-cache = null;
-fs.writeFile('out/people.json', json, 'utf8', function(err) {
-    if (err) throw err;
-    console.log('complete');
-});
-console.log("Done!")
+        return value;
+    });
+    cache = null
+    return json
+}
