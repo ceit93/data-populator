@@ -1,12 +1,13 @@
 console.log("Hello there!")
 console.log("Starting to run CEIT 93 Data Migrator...")
+let fs = require('fs')
+
 
 // Load data
 let posts = require('../data/posts.json')
 let users = require('../data/users.json')
 let interviews = require('../data/interviews.json')
 let questions = require('../data/questions.json')
-let
 console.log("Data loaded!")
 console.log("Starting to identify people...")
 
@@ -27,7 +28,9 @@ console.log("CEIT 93 Community Identified!")
 console.log("Starting to populate the fields...")
 
 // Populate related data fields
-for (let user of people){
+for (let index in people){
+    let user = people[index]
+    console.log(user.name)
     // Populate interviews
     for (let i in user.interviews){
         let id = user.interviews[i]
@@ -39,8 +42,39 @@ for (let user of people){
     for (let i in user.posts){
         let id = user.posts[i]
         let post = posts.find(p => p._id === id)
-        post.user = users.find(q => q._id === post.user)
-        user.posts[i] = post
+        try {
+            post.user = users.find(q => q._id === post.user)
+            user.posts[i] = post
+        } catch (e) {}
     }
 }
-console.log()
+console.log(people)
+console.log("People are populated!")
+console.log("Writing data to file...")
+
+// Start to write data to file
+// let json = JSON.stringify(people);
+let cache = [];
+let json = JSON.stringify(people, function(key, value) {
+    if (typeof value === 'object' && value !== null) {
+        if (cache.indexOf(value) !== -1) {
+            // Duplicate reference found
+            try {
+                // If this value does not reference a parent it can be deduped
+                return JSON.parse(JSON.stringify(value));
+            } catch (error) {
+                // discard key if value cannot be deduped
+                return;
+            }
+        }
+        // Store value in our collection
+        cache.push(value);
+    }
+    return value;
+});
+cache = null;
+fs.writeFile('out/people.json', json, 'utf8', function(err) {
+    if (err) throw err;
+    console.log('complete');
+});
+console.log("Done!")

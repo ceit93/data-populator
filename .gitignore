@@ -9,6 +9,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -135,4 +136,6 @@ typings/
 # Serverless directories
 .serverless
 
-/data
+# Data directory
+data
+out
