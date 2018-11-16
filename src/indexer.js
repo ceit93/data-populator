@@ -29,7 +29,8 @@ people = people.map(u => {
         std_numbers: u.std_numbers,
         avatar: u.avatar,
         gender: u.gender,
-        grad_photo: u.grad_photo
+        grad_photo: u.grad_photo,
+        modified_name: u.modified_name
     }
 })
 console.log('writing down...')
