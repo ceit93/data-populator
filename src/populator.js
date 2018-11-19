@@ -9,6 +9,7 @@ let posts = require('../data/posts.json')
 let users = require('../data/users.json')
 let interviews = require('../data/interviews.json')
 let questions = require('../data/questions.json')
+let topTarins = require('../data/toptarins.json')
 console.log("Data loaded!")
 console.log("Starting to identify people...")
 
@@ -53,6 +54,12 @@ for (let index = start; index < end && index < people.length; index++){
             post.user = users.find(q => q._id === post.user)
             user.posts[i] = post
         } catch (e) {}
+    }
+
+    // Populate TopTarins
+    for (let i in users) {
+        let user = users[i]
+        user.topTarin = topTarins.find(v => v.user === user._id)
     }
     console.log('writing down ' + user.username)
     let string = stringify(user)
