@@ -38,6 +38,7 @@ console.log("from " + start + ' to ' + end)
 for (let index = start; index < end && index < people.length; index++){
     console.log("index: " + index + "/" + people.length)
     let user = people[index]
+
     console.log(user.name)
     // Populate interviews
     for (let i in user.interviews){
@@ -51,8 +52,12 @@ for (let index = start; index < end && index < people.length; index++){
         let id = user.posts[i]
         let post = posts.find(p => p._id === id)
         try {
-            post.user = users.find(q => q._id === post.user)
-            user.posts[i] = post
+            if(post.approved){
+                post.user = users.find(q => q._id === post.user)
+                user.posts[i] = post
+            } else {
+                console.log("OOPS! Post is not approved!")
+            }
         } catch (e) {}
     }
 
